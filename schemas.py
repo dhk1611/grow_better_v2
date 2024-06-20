@@ -16,7 +16,7 @@ class PlantCreate(PlantBase):
     pass
 
 class CommentBase(BaseModel):
-    plant_name: str
+    name: str
     comment: str
     
 class CommentCreate(CommentBase):

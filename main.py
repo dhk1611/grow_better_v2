@@ -40,32 +40,37 @@ def create_plant(
 ): 
     return crud.create_plant(db=db, plant=plant, id=id)
 
+@app.post("/plants/comment/")
+def comment_on_plant(comment: schemas.CommentCreate, db: Session = Depends(get_db)):
+    
+    return crud.create_comment(db=db, comment=comment)
+
+
+
 @app.get("/plants/all")
 def get_all_plants(db: Session = Depends(get_db)):
     return crud.get_all_plants(db=db)
     
 
-# @app.post("/plants/comment/")
-# def comment_on_plant(comment: schemas.CommentCreate, db: Session = Depends(get_db)):
-#     pass
     
-# @app.get("/plants/status/{plant_name}", response_model=schemas.Plant)
-# def get_plant_status(plant_name: str, db: Session = Depends(get_db)):
-#     pass
+@app.get("/plants/status/{plant_name}")
+def get_plants_status(plant_name: str, db: Session = Depends(get_db)):
+    return crud.get_plant_status(plant_name = plant_name, db=db)
 
 
 @app.delete("/plants/status/{plant_name}")
-def delete_plant(
-    plant_name: str, db: Session = Depends(get_db)
+def delete_plants(
+    id=id, db: Session = Depends(get_db)
     ):
-        return crud.delete_plant(plant_name=plant_name, db=db)
+    return crud.delete_plant(id=id, db=db)
 
-# @app.get("/plants/comments/{plant_name}", response_model=list[schemas.Comment])
-# def get_comments_by_plant(plant_name: str, db: Session = Depends(get_db)):
-#     pass
+@app.get("/plants/comments/{plant_name}")
+def get_comments_by_plant(name: str, db: Session = Depends(get_db)):
+
+    return crud.get_comment(name=name, db=db)
 
 
-# @app.get("/plants/growth_stage/{growth_stage}", response_model=list[schemas.Plant])
-# def get_plants_by_growth_stage(growth_stage: str, db: Session = Depends(get_db)):
-#     pass
+@app.get("/plants/growth_stage/{growth_stage}")
+def get_plants_by_growth_stage(status: str, db: Session = Depends(get_db)):
+    return crud.get_plant_by_status(status=status, db=db)
 
