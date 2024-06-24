@@ -8,6 +8,8 @@ from rate_comments import CommentRater
 
 models.Base.metadata.create_all(bind=engine)
 
+
+
 app = FastAPI()
 
 # Allow CORS for all origins (for simplicity)
@@ -41,17 +43,24 @@ def create_plant(
     return crud.create_plant(db=db, plant=plant, id=id)
 
 @app.post("/plants/comment/")
-def comment_on_plant(comment: schemas.CommentCreate, db: Session = Depends(get_db)):
+def comment_on_plant(comments: schemas.CommentCreate, db: Session = Depends(get_db)):  
+    # plant name으로 잡기
+    comment_content = comments.comment
+    plant = db.query(models.Plant).filter(models.Plant.name == comments.name).first()
+    plant.given_comment += 1
     
-    return crud.create_comment(db=db, comment=comment)
-
+    # comment instance -> json 점수로 파싱
+    rater = CommentRater(comment_content)
+    result = rater.create_score()
+    
+    db.commit()  
+    return crud.create_comment(db=db, comment=comments, scores=result)
 
 
 @app.get("/plants/all")
 def get_all_plants(db: Session = Depends(get_db)):
     return crud.get_all_plants(db=db)
     
-
     
 @app.get("/plants/status/{plant_name}")
 def get_plants_status(plant_name: str, db: Session = Depends(get_db)):
@@ -60,13 +69,12 @@ def get_plants_status(plant_name: str, db: Session = Depends(get_db)):
 
 @app.delete("/plants/status/{plant_name}")
 def delete_plants(
-    id=id, db: Session = Depends(get_db)
+    id:int, db: Session = Depends(get_db)
     ):
     return crud.delete_plant(id=id, db=db)
 
 @app.get("/plants/comments/{plant_name}")
 def get_comments_by_plant(name: str, db: Session = Depends(get_db)):
-
     return crud.get_comment(name=name, db=db)
 
 

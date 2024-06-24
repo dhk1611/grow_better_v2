@@ -23,9 +23,8 @@ class Plant(Base):          #Plant라는 테이블
 class Comments(Base):
     __tablename__="comments"
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(String, ForeignKey(Plant.name))
     comment = Column(String)
-    plant_id = Column(Integer, ForeignKey(Plant.id))
     
     plant_relation= relationship("Plant", back_populates="comment_relation")
     
